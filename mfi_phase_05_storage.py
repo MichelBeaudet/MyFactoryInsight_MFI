@@ -99,7 +99,7 @@ INFLUX_TOKEN        = "mfi-dev-token"       # Default dev token
 INFLUX_ORG          = "mecanitec"
 INFLUX_BUCKET       = "mfi"
 INFLUX_MEASUREMENT  = "machine_metrics"
-INFLUX_TIMEOUT_MS   = 5_000                 # Write timeout (ms)
+INFLUX_TIMEOUT_MS   = 500                   # Write timeout (ms) — kept short to avoid blocking pipeline
 INFLUX_RETRIES      = 3                     # Retry attempts on write failure
 
 # ── InfluxDB tag fields (low cardinality — go to tags not fields) ─────────────
@@ -376,8 +376,12 @@ class MFIMQTTPublisher:
             return True
 
         if not self._connected:
-            LOG.warning("MQTT publish skipped │ not connected │ topic=%s", topic)
             self._errors += 1
+            if self._errors == 1:
+                LOG.warning(
+                    "MQTT not connected — publish skipped. "
+                    "Further skip warnings suppressed."
+                )
             return False
 
         info = self._client.publish(topic=topic, payload=payload, qos=qos)
@@ -653,7 +657,15 @@ class MFIInfluxWriter:
                 )
                 return {"written": 0, "skipped": len(points), "errors": 1}
 
+            # Circuit breaker: skip all writes after first connection failure
+            if self._errors > 0:
+                return {"written": 0, "skipped": len(points), "errors": 0}
+
+            _connection_failed = False
             for pt in points:
+                if _connection_failed:
+                    skipped += 1
+                    continue
                 for attempt in range(1, INFLUX_RETRIES + 1):
                     try:
                         self._write_api.write(
@@ -673,9 +685,17 @@ class MFIInfluxWriter:
                             errors += 1
                             self._errors += 1
                     except Exception as exc:
-                        LOG.error("InfluxDB unexpected error │ %s", exc)
-                        errors += 1
                         self._errors += 1
+                        errors += 1
+                        _connection_failed = True
+                        if self._errors == 1:
+                            LOG.error(
+                                "InfluxDB connection failed │ %s │ ", exc,
+                            )
+                            LOG.warning(
+                                "InfluxDB unreachable — further errors suppressed. "
+                                "Use --no-storage to disable entirely."
+                            )
                         break
 
         LOG.info(

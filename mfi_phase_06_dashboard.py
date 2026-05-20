@@ -427,16 +427,20 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg:       #070d12;
-      --surface:  #0d1a24;
-      --border:   #1a2e40;
-      --accent:   #00b4d8;
-      --run:      #00e676;
-      --idle:     #ffd600;
-      --fault:    #ff1744;
-      --maint:    #ff9100;
-      --text:     #c8d8e4;
-      --dim:      #4a6275;
+      --bg:       #f0f2f5;
+      --surface:  #ffffff;
+      --surface2: #f7f9fb;
+      --border:   #d0d8e4;
+      --border2:  #e2e8f0;
+      --accent:   #0077cc;
+      --accent2:  #005fa3;
+      --run:      #0a9e5c;
+      --idle:     #c07800;
+      --fault:    #cc2200;
+      --maint:    #b05a00;
+      --text:     #1a2433;
+      --label:    #6b7a8d;
+      --dim:      #9aaabb;
       --mono:     'Share Tech Mono', monospace;
       --sans:     'Barlow', sans-serif;
     }
@@ -446,7 +450,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
-      font-size: 14px;
+      font-size: 15px;
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -456,25 +460,27 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 28px;
+      padding: 10px 20px;
       background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
     .logo {
       font-family: var(--mono);
       font-size: 18px;
       color: var(--accent);
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
+      font-weight: 700;
     }
-    .logo span { color: #fff; }
+    .logo span { color: var(--text); }
     .header-meta {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
       font-family: var(--mono);
       font-size: 12px;
-      color: var(--dim);
+      color: var(--label);
     }
     .pulse-dot {
       width: 8px; height: 8px;
@@ -490,28 +496,32 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     }
 
     /* ── Layout ── */
-    main { padding: 20px 28px; display: flex; flex-direction: column; gap: 20px; }
+    main { padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; }
 
     /* ── Status grid ── */
     .status-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 10px;
     }
     .status-card {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border2);
       border-radius: 6px;
-      padding: 18px 20px;
+      padding: 10px 14px 8px;
       position: relative;
       overflow: hidden;
-      transition: border-color 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .status-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
+      border-radius: 6px 6px 0 0;
     }
     .status-card.run::before    { background: var(--run); }
     .status-card.idle::before   { background: var(--idle); }
@@ -520,26 +530,28 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
     .card-label {
       font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: var(--dim);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--label);
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 2px;
+      font-weight: 700;
     }
     .card-value {
       font-family: var(--mono);
-      font-size: 42px;
-      font-weight: 400;
+      font-size: 34px;
+      font-weight: 700;
       line-height: 1;
+      color: var(--text);
     }
-    .status-card.run .card-value   { color: var(--run); }
-    .status-card.idle .card-value  { color: var(--idle); }
+    .status-card.run  .card-value { color: var(--run); }
+    .status-card.idle .card-value { color: var(--idle); }
     .status-card.fault .card-value { color: var(--fault); }
     .status-card.maint .card-value { color: var(--maint); }
     .card-sub {
       font-size: 11px;
       color: var(--dim);
-      margin-top: 6px;
+      margin-top: 3px;
       font-family: var(--mono);
     }
 
@@ -547,144 +559,160 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     .kpi-row {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
+      gap: 10px;
     }
     .kpi-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 18px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     .kpi-label {
       font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: var(--dim);
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--label);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      font-weight: 700;
     }
     .kpi-value {
       font-family: var(--mono);
-      font-size: 26px;
+      font-size: 24px;
       color: var(--accent);
+      font-weight: 700;
     }
-    .kpi-unit { font-size: 12px; color: var(--dim); margin-left: 3px; }
+    .kpi-unit { font-size: 13px; color: var(--label); margin-left: 2px; }
 
     /* ── Panels row ── */
     .panels-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 12px;
+      align-items: start;
     }
 
     /* ── Panel ── */
     .panel {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
       overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     .panel-header {
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border2);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: var(--surface2);
     }
     .panel-title {
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 3px;
-      color: var(--accent);
+      color: var(--label);
       text-transform: uppercase;
+      font-weight: 700;
     }
-    .panel-body { padding: 16px 18px; }
+    .panel-body { padding: 10px 14px; }
 
     /* ── Machine table ── */
     .machine-table {
       width: 100%;
       border-collapse: collapse;
       font-family: var(--mono);
-      font-size: 11px;
+      font-size: 12px;
     }
     .machine-table th {
       text-align: left;
-      color: var(--dim);
-      letter-spacing: 2px;
-      padding: 0 8px 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-weight: 400;
+      color: var(--label);
+      letter-spacing: 1px;
+      padding: 0 6px 6px 0;
+      border-bottom: 2px solid var(--border);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
     }
     .machine-table td {
-      padding: 7px 8px 7px 0;
-      border-bottom: 1px solid rgba(26,46,64,0.5);
+      padding: 4px 6px 4px 0;
+      border-bottom: 1px solid var(--border2);
       vertical-align: middle;
+      color: var(--text);
+      font-size: 13px;
     }
+    .machine-table tr:hover td { background: var(--surface2); }
     .machine-table tr:last-child td { border-bottom: none; }
 
     .status-badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 3px;
-      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
       letter-spacing: 1px;
       font-weight: 700;
     }
-    .badge-RUN         { background: rgba(0,230,118,0.12); color: var(--run);   border: 1px solid rgba(0,230,118,0.3); }
-    .badge-IDLE        { background: rgba(255,214,0,0.12);  color: var(--idle);  border: 1px solid rgba(255,214,0,0.3); }
-    .badge-FAULT       { background: rgba(255,23,68,0.15);  color: var(--fault); border: 1px solid rgba(255,23,68,0.4); }
-    .badge-MAINTENANCE { background: rgba(255,145,0,0.12);  color: var(--maint); border: 1px solid rgba(255,145,0,0.3); }
+    .badge-RUN         { background: #e6f9f0; color: var(--run);   border: 1px solid #b3e6d0; }
+    .badge-IDLE        { background: #fff8e6; color: var(--idle);  border: 1px solid #ffe0a0; }
+    .badge-FAULT       { background: #fde8e4; color: var(--fault); border: 1px solid #f5b0a0; }
+    .badge-MAINTENANCE { background: #fff0e0; color: var(--maint); border: 1px solid #ffd0a0; }
 
-    .temp-crit { color: var(--fault); }
-    .temp-warn { color: var(--idle); }
-    .temp-ok   { color: var(--dim); }
+    .temp-crit { color: var(--fault); font-weight: 700; }
+    .temp-warn { color: var(--idle);  font-weight: 600; }
+    .temp-ok   { color: var(--label); }
     .alarm-active { color: var(--fault); font-weight: 700; }
 
     /* ── Alarm list ── */
-    .alarm-list { display: flex; flex-direction: column; gap: 8px; }
+    .alarm-list { display: flex; flex-direction: column; gap: 0; }
     .alarm-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: 76px 56px 56px 1fr;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: rgba(255,23,68,0.06);
-      border: 1px solid rgba(255,23,68,0.2);
-      border-radius: 4px;
-      font-family: var(--mono);
-      font-size: 11px;
+      gap: 8px;
+      padding: 5px 8px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border2);
+      font-family: var(--sans);
+      font-size: 12px;
+      transition: background 0.15s;
     }
-    .alarm-icon { color: var(--fault); font-size: 14px; }
-    .alarm-machine { color: var(--accent); font-weight: 700; }
-    .alarm-code { color: var(--fault); }
-    .alarm-temp { color: var(--idle); }
+    .alarm-item:last-child { border-bottom: none; }
+    .alarm-item:hover { background: var(--surface2); }
+    .alarm-item.sev-crit {}
+    .alarm-item.sev-warn {}
+    .alarm-item.sev-info {}
+    .alarm-icon { display: none; }
+    .alarm-machine { color: var(--text); font-weight: 700; font-size: 12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .alarm-code { color: var(--fault); font-weight: 700; font-size: 11px; }
+    .alarm-temp { color: var(--idle); font-weight: 600; font-size: 11px; }
+    .alarm-type { color: var(--label); font-size: 11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .no-alarms {
       text-align: center;
-      padding: 30px;
-      color: var(--dim);
-      font-family: var(--mono);
+      padding: 20px;
+      color: var(--label);
       font-size: 12px;
     }
-    .no-alarms-icon { font-size: 28px; margin-bottom: 8px; }
+    .no-alarms-icon { font-size: 22px; margin-bottom: 6px; }
 
     /* ── Chart container ── */
-    .chart-wrap { position: relative; height: 200px; }
+    .chart-wrap { position: relative; height: 180px; }
 
     /* ── Footer ── */
     footer {
       text-align: center;
       padding: 14px;
       font-family: var(--mono);
-      font-size: 10px;
+      font-size: 11px;
       color: var(--dim);
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border2);
       letter-spacing: 2px;
+      background: var(--surface);
     }
 
     /* ── Scrollable table area ── */
-    .table-scroll { max-height: 280px; overflow-y: auto; }
-    .table-scroll::-webkit-scrollbar { width: 4px; }
-    .table-scroll::-webkit-scrollbar-track { background: transparent; }
-    .table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .table-scroll { overflow: visible; }
 
     /* ── Availability bar ── */
     .avail-bar-wrap { margin-top: 10px; }
@@ -704,18 +732,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       font-family: var(--mono);
-      font-size: 10px;
-      color: var(--dim);
+      font-size: 11px;
+      color: var(--label);
       margin-bottom: 4px;
     }
 
     /* ── Fade-in animation ── */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .status-card, .kpi-card { animation: fadeIn 0.4s ease both; }
+    .status-card, .kpi-card { animation: fadeIn 0.3s ease both; }
   </style>
+
 </head>
 <body>
 
@@ -793,8 +822,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         <span style="font-family:var(--mono);font-size:10px;color:var(--dim)" id="machine-count">0 machines</span>
       </div>
       <div class="panel-body" style="padding:0">
-        <div class="table-scroll" style="padding:0 18px">
-          <table class="machine-table">
+        <div class="table-scroll" style="padding:0 14px">
+          <table class="machine-table" style="table-layout:fixed;width:100%">
+            <colgroup>
+              <col style="width:80px">
+              <col style="width:65px">
+              <col style="width:62px">
+              <col style="width:55px">
+              <col style="width:50px">
+              <col style="width:45px">
+              <col style="width:55px">
+              <col style="width:65px">
+              <col style="width:50px">
+            </colgroup>
             <thead>
               <tr>
                 <th>ID</th>
@@ -803,6 +843,9 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <th>TEMP</th>
                 <th>ALARM</th>
                 <th>AVAIL</th>
+                <th>QUALITY</th>
+                <th>PIECES</th>
+                <th>CYCLE s</th>
               </tr>
             </thead>
             <tbody id="machine-tbody"></tbody>
@@ -826,22 +869,39 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- ALARMS -->
+      <!-- ALARMS — split into two sub-sections -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Active Alarms &amp; Warnings</span>
           <span style="font-family:var(--mono);font-size:10px;color:var(--fault)" id="alarm-badge"></span>
         </div>
-        <div class="panel-body">
-          <div class="alarm-list" id="alarm-list">
-            <div class="no-alarms">
-              <div class="no-alarms-icon">✓</div>
-              No active alarms
+        <div class="panel-body" style="padding:0">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+            <!-- Left: Alarms -->
+            <div style="padding:8px 12px 10px;border-right:1px solid var(--border2)">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;
+                          color:var(--fault);font-weight:700;margin-bottom:6px">
+                ▲ ALARMS <span id="alarm-count" style="color:var(--label);font-weight:400"></span>
+              </div>
+              <div class="alarm-list" id="alarm-list-alarms">
+                <div class="no-alarms" style="padding:6px 0">None</div>
+              </div>
+            </div>
+            <!-- Right: Warnings -->
+            <div style="padding:8px 12px 10px">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;
+                          color:var(--idle);font-weight:700;margin-bottom:6px">
+                ~ WARNINGS <span id="warn-count" style="color:var(--label);font-weight:400"></span>
+              </div>
+              <div class="alarm-list" id="alarm-list-warnings">
+                <div class="no-alarms" style="padding:6px 0">None</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+    </div>
     </div>
   </div>
 
@@ -914,13 +974,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                       : m.temp_severity === 'WARN'     ? 'temp-warn' : 'temp-ok';
       const alarmClass = m.alarm_code !== 0 ? 'alarm-active' : '';
       const avail = m.availability != null ? (m.availability * 100).toFixed(0) + '%' : '—';
+      const quality = m.quality_rate != null ? (m.quality_rate*100).toFixed(0)+'%' : '—';
+      const pieces  = m.piece_count != null ? m.piece_count.toLocaleString() : '—';
+      const cycle   = m.cycle_time_sec > 0  ? m.cycle_time_sec.toFixed(1)    : '—';
       return '<tr>' +
-        '<td>' + m.machine_id + '</td>' +
-        '<td style="color:var(--dim)">' + m.machine_type + '</td>' +
+        '<td style="font-weight:600">' + m.machine_id + '</td>' +
+        '<td style="color:var(--label)">' + m.machine_type + '</td>' +
         '<td><span class="status-badge badge-' + m.status + '">' + m.status + '</span></td>' +
         '<td class="' + tempClass + '">' + m.temperature_c.toFixed(1) + '°C</td>' +
         '<td class="' + alarmClass + '">' + (m.alarm_code || '—') + '</td>' +
-        '<td style="color:var(--dim)">' + avail + '</td>' +
+        '<td style="color:var(--label)">' + avail + '</td>' +
+        '<td style="color:var(--label)">' + quality + '</td>' +
+        '<td style="color:var(--text)">' + pieces + '</td>' +
+        '<td style="color:var(--label)">' + cycle + '</td>' +
       '</tr>';
     }).join('');
   }
@@ -933,14 +999,51 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     const running   = labels.map(k => breakdown[k].running);
 
     const COLORS = {
-      CNC:      '#00b4d8',
-      PRESS:    '#7b2fff',
-      ROBOT:    '#00e676',
-      CONVEYOR: '#ffd600',
-      WELDER:   '#ff7043',
+      CNC:      '#2563eb',
+      PRESS:    '#7c3aed',
+      ROBOT:    '#059669',
+      CONVEYOR: '#d97706',
+      WELDER:   '#dc2626',
     };
-    const bgColors = labels.map(l => COLORS[l] || '#546e7a');
+    const bgColors = labels.map(l => COLORS[l] || '#64748b');
 
+    const chartOpts = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ' ' + ctx.parsed.y.toLocaleString() + ' pcs'
+          },
+          backgroundColor: '#fff',
+          titleColor: '#1a2433',
+          bodyColor: '#1a2433',
+          borderColor: '#d0d8e4',
+          borderWidth: 1,
+          padding: 8,
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#6b7a8d', font: { family: "'Barlow'", size: 12, weight: '600' } },
+          grid:  { display: false },
+          border: { color: '#d0d8e4' },
+        },
+        y: {
+          ticks: {
+            color: '#9aaabb',
+            font: { family: "'Barlow'", size: 11 },
+            maxTicksLimit: 5,
+            callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'M'
+                         : v >= 1000    ? (v/1000).toFixed(0)+'K' : v
+          },
+          grid:  { color: 'rgba(208,216,228,0.5)', lineWidth: 1 },
+          border: { dash: [4,4], display: false },
+        }
+      },
+      animation: { duration: 400 }
+    };
     if (!prodChart) {
       const ctx = document.getElementById('production-chart').getContext('2d');
       prodChart = new Chart(ctx, {
@@ -950,75 +1053,80 @@ DASHBOARD_HTML = """<!DOCTYPE html>
           datasets: [{
             label: 'Total Pieces',
             data: pieces,
-            backgroundColor: bgColors.map(c => c + '33'),
-            borderColor: bgColors,
-            borderWidth: 1.5,
-            borderRadius: 3,
+            backgroundColor: bgColors,
+            borderWidth: 0,
+            borderRadius: 4,
+            borderSkipped: false,
+            barPercentage: 0.55,
           }]
         },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: {
-              ticks: { color: '#4a6275', font: { family: "'Share Tech Mono'", size: 10 } },
-              grid:  { color: 'rgba(26,46,64,0.8)' },
-            },
-            y: {
-              ticks: { color: '#4a6275', font: { family: "'Share Tech Mono'", size: 10 } },
-              grid:  { color: 'rgba(26,46,64,0.8)' },
-            }
-          }
-        }
+        options: chartOpts
       });
     } else {
-      prodChart.data.labels                  = labels;
-      prodChart.data.datasets[0].data        = pieces;
-      prodChart.data.datasets[0].backgroundColor = bgColors.map(c => c + '33');
-      prodChart.data.datasets[0].borderColor = bgColors;
+      prodChart.data.labels               = labels;
+      prodChart.data.datasets[0].data     = pieces;
+      prodChart.data.datasets[0].backgroundColor = bgColors;
       prodChart.update('none');
     }
   }
 
-  // ── Update alarms panel ────────────────────────────────────────────────────
+  // ── Update alarms panel — two separate lists ─────────────────────────────
   function updateAlarms(machines) {
-    const alarmList = document.getElementById('alarm-list');
-    const alarmed   = machines.filter(m => m.alarm_code !== 0 || m.temp_severity !== 'OK');
+    // Split: alarm_code != 0  vs  temp only warnings
+    const withAlarm = machines.filter(m => m.alarm_code !== 0);
+    const withWarn  = machines.filter(m => m.alarm_code === 0 && m.temp_severity !== 'OK');
+    const total     = withAlarm.length + withWarn.length;
 
     document.getElementById('alarm-badge').textContent =
-      alarmed.length > 0 ? alarmed.length + ' ACTIVE' : '';
+      total > 0 ? total + ' ACTIVE' : '';
 
-    if (alarmed.length === 0) {
-      alarmList.innerHTML =
-        '<div class="no-alarms"><div class="no-alarms-icon">✓</div>No active alarms</div>';
-      return;
+    function buildRow(m) {
+      const isCrit  = m.alarm_code >= 300 || m.temp_severity === 'CRITICAL';
+      const sevClass = isCrit ? 'sev-crit' : 'sev-warn';
+      let detail = '';
+      if (m.alarm_code !== 0)
+        detail = '<span class="alarm-code">ALM ' + m.alarm_code + '</span>';
+      else
+        detail = '<span class="alarm-temp">' + m.temperature_c.toFixed(1) + '°C</span>';
+      // Abbreviate status for badge
+      const statusShort = m.status === 'MAINTENANCE' ? 'MAINT' : m.status;
+      return '<div class="alarm-item ' + sevClass + '">' +
+        '<span class="alarm-machine">' + m.machine_id + '</span>' +
+        '<span class="alarm-type">' + m.machine_type + '</span>' +
+        '<span class="status-badge badge-' + m.status + '">' + statusShort + '</span>' +
+        detail +
+      '</div>';
     }
 
-    alarmList.innerHTML = alarmed.slice(0, 8).map(m => {
-      const parts = [];
-      if (m.alarm_code !== 0)
-        parts.push('<span class="alarm-code">ALM ' + m.alarm_code + '</span>');
-      if (m.temp_severity === 'CRITICAL')
-        parts.push('<span class="alarm-temp">⚠ TEMP ' + m.temperature_c.toFixed(1) + '°C</span>');
-      else if (m.temp_severity === 'WARN')
-        parts.push('<span class="alarm-temp">~ TEMP ' + m.temperature_c.toFixed(1) + '°C</span>');
-      return '<div class="alarm-item">' +
-        '<span class="alarm-icon">▲</span>' +
-        '<span class="alarm-machine">' + m.machine_id + '</span>' +
-        '<span style="color:var(--dim)">' + m.machine_type + '</span>' +
-        '<span class="status-badge badge-' + m.status + '">' + m.status + '</span>' +
-        parts.join(' ') +
-      '</div>';
-    }).join('');
+    const alarmEl = document.getElementById('alarm-list-alarms');
+    const warnEl  = document.getElementById('alarm-list-warnings');
+    const aCount  = document.getElementById('alarm-count');
+    const wCount  = document.getElementById('warn-count');
+
+    if (withAlarm.length === 0) {
+      alarmEl.innerHTML = '<div class="no-alarms" style="padding:6px 0">None</div>';
+      aCount.textContent = '';
+    } else {
+      aCount.textContent = '(' + withAlarm.length + ')';
+      alarmEl.innerHTML = withAlarm.map(buildRow).join('');
+    }
+
+    if (withWarn.length === 0) {
+      warnEl.innerHTML = '<div class="no-alarms" style="padding:6px 0">None</div>';
+      wCount.textContent = '';
+    } else {
+      wCount.textContent = '(' + withWarn.length + ')';
+      warnEl.innerHTML = withWarn.map(buildRow).join('');
+    }
   }
 
   // ── Main data fetch ───────────────────────────────────────────────────────
   async function refresh() {
     try {
       const [fleetRes, machinesRes, kpiRes] = await Promise.all([
-        fetch(API + '/api/fleet'),
-        fetch(API + '/api/machines'),
-        fetch(API + '/api/kpi'),
+        fetch(API + '/api/fleet?t='    + Date.now()),
+        fetch(API + '/api/machines?t=' + Date.now()),
+        fetch(API + '/api/kpi?t='      + Date.now()),
       ]);
       if (!fleetRes.ok || !machinesRes.ok || !kpiRes.ok) return;
       const fleet    = await fleetRes.json();
@@ -1038,7 +1146,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   refresh();
-  setInterval(refresh, 2000);
+  setInterval(refresh, 3000);
 </script>
 </body>
 </html>"""
@@ -1073,6 +1181,20 @@ def create_app(store: PipelineStore) -> FastAPI:
         allow_methods       = ["GET"],
         allow_headers       = ["*"],
     )
+
+    # No-cache middleware — prevents browser caching of API responses
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request as _StarletteRequest
+
+    class NoCacheMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: _StarletteRequest, call_next):
+            response = await call_next(request)
+            if request.url.path.startswith(API_PREFIX):
+                response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+                response.headers["Pragma"]         = "no-cache"
+            return response
+
+    app.add_middleware(NoCacheMiddleware)
 
     # ── Route: Dashboard HTML ─────────────────────────────────────────────
     @app.get("/", response_class=HTMLResponse, tags=["ui"])
@@ -1329,7 +1451,7 @@ def run_self_test() -> bool:
     # ── Test 18: DASHBOARD_HTML required element IDs ──────────────────────
     required_ids = [
         "count-run", "count-fault", "kpi-avail", "kpi-oee",
-        "kpi-quality", "kpi-pieces", "machine-tbody", "alarm-list",
+        "kpi-quality", "kpi-pieces", "machine-tbody", "alarm-list-alarms",
         "production-chart",
     ]
     ids_ok = all(f'id="{eid}"' in DASHBOARD_HTML for eid in required_ids)

@@ -21,17 +21,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="mfi phase 01 simulation.py" />
-    <Compile Include="mfi phase 02 readers.py" />
-    <Compile Include="mfi phase 03 json model.py" />
-    <Compile Include="mfi phase 04 core.py" />
-    <Compile Include="mfi phase 05 storage.py" />
-    <Compile Include="mfi phase 06 dashboard.py" />
-    <Compile Include="mfi phase 07 alerts.py" />
-    <Compile Include="mfi phase 08 users.py" />
-    <Compile Include="mfi phase 09 reports.py" />
-    <Compile Include="mfi phase 10 predict.py" />
-    <Compile Include="mfi phase 11 mobile.py" />
+    <Compile Include="mfi_phase_01_simulation.py" />
+    <Compile Include="mfi_phase_02_readers.py" />
+    <Compile Include="mfi_phase_03_json_model.py" />
+    <Compile Include="mfi_phase_04_core.py" />
+    <Compile Include="mfi_phase_05_storage.py" />
+    <Compile Include="mfi_phase_06_dashboard.py" />
+    <Compile Include="mfi_phase_07_alerts.py" />
+    <Compile Include="mfi_phase_08_users.py" />
+    <Compile Include="mfi_phase_09_reports.py" />
+    <Compile Include="mfi_phase_10_predict.py" />
+    <Compile Include="mfi_phase_11_mobile.py" />
     <Compile Include="MyFactoryInsight_MFI.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
